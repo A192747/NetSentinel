@@ -7,16 +7,16 @@ import com.project.netsentinel.tools.network.model.PingResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
 import java.net.InetAddress;
 
 @Slf4j
 @Component
 public class NetworkTools {
 
-    @Tool(description = "Проверить доступность узла в сети (ping)")
+    @Tool(description = "Проверить физическую доступность хоста через ping")
     public PingResponse executePing(PingRequest request) {
+        log.info("Resolving ping for: {}", request.host());
         // 1. Сначала пробуем нативный Java check
         try {
             if (InetAddress.getByName(request.host()).isReachable(2000)) {

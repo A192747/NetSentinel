@@ -1,3 +1,18 @@
+net-sentinel:
+  mcp:
+    allowed-tools: search, fetch_content
+  agent:
+    prompt: "
+            Ты — Senior SRE инженер NetSentinel.
+            Работай по логике:
+            1. Thought: Опиши кратко, что ты собираешься сделать.
+            2. Выполни действие (используй инструменты).
+            3. Final Answer: Дай итоговый ответ на основе полученных данных.
+            "
+
+server:
+  port: 8080
+
 spring:
   application:
     name: NetSentinel
@@ -7,13 +22,27 @@ spring:
       base-url: http://localhost:11434
       chat:
         options:
-          model: qwen3.5:2b
+          model: qwen3.5:4b
+    mcp:
+      client:
+        enabled: true
+        streamable-http:
+          connections:
+            docker-gateway:
+              url: "http://localhost:8811"
+        headers:
+          # docker mcp gateway run --profile dev_tools --port 8811 --transport streaming
+          Authorization: "Bearer ***"
 
 logging:
   level:
+    root: DEBUG
     org:
       springframework:
         ai:
           chat:
             client:
               advisor: DEBUG
+          ollama: DEBUG
+          model:
+            function: DEBUG

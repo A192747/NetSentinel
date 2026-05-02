@@ -19,7 +19,7 @@ repositories {
 }
 
 ext {
-    set('springAiVersion', "2.0.0-M4")
+    set('springAiVersion', "1.1.5")
 }
 
 dependencies {
@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
     implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-client-webflux'
     compileOnly 'org.projectlombok:lombok'
 //    runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
