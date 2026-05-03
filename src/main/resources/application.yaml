@@ -11,6 +11,13 @@ net-sentinel:
               "
     executor:
       prompt: "Выполни конкретную задачу диагностики. Используй инструменты."
+    answerer:
+      prompt: "
+              Ты — ведущий SRE-инженер. Твоя задача: проанализировать результаты диагностики и дать осознанный ответ.
+              Если проблема решена — объясни причину. 
+              Если данных недостаточно — честно скажи, чего не хватает, и предложи варианты.
+              Будь краток и техничен.
+              "
     user:
       prompt: "
               Ты — Senior SRE инженер NetSentinel.
@@ -34,7 +41,7 @@ spring:
 
   ai:
     ollama:
-      base-url: http://localhost:11434
+      base-url: ${OLLAMA_URL:http://localhost:11434}
       chat:
         options:
           model: qwen3.5:4b
@@ -44,10 +51,10 @@ spring:
         streamable-http:
           connections:
             docker-gateway:
-              url: "http://localhost:8811"
+              url: ${DOCKER_GATEWAY_URL:http://localhost:8811}
         headers:
           # docker mcp gateway run --profile dev_tools --port 8811 --transport streaming
-          Authorization: "Bearer ***"
+          Authorization: ${GATEWAY_AUTHORIZATION_TOKEN:Bearer lhyestnafrqir0u1sbffelxjvtteed550hej7vlu2i9mfslpcn}
 
 logging:
   level:

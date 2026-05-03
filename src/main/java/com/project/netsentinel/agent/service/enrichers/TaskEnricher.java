@@ -5,10 +5,10 @@ import com.project.netsentinel.agent.model.DiagnosticTask;
 import java.util.UUID;
 
 public interface TaskEnricher {
-    String mainPrompt = "";
     
     default DiagnosticTask enrich(String input, UUID chatId) {
-        return new DiagnosticTask(mainPrompt, chatId, input);
+        return new DiagnosticTask(getMainPrompt(), chatId, input);
     }
     Enrichers getType();
+    String getMainPrompt();
 }

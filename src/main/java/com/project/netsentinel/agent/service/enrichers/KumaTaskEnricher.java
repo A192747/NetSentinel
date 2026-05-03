@@ -13,4 +13,9 @@ public class KumaTaskEnricher implements TaskEnricher {
     public Enrichers getType() {
         return Enrichers.KUMA;
     }
+
+    @Override
+    public String getMainPrompt() {
+        return mainPrompt;
+    }
 }

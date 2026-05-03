@@ -6,6 +6,7 @@ import com.project.netsentinel.agent.model.DiagnosticStep;
 import com.project.netsentinel.agent.model.DiagnosticTask;
 import com.project.netsentinel.agent.service.executor.ExecutorService;
 import com.project.netsentinel.agent.service.planner.PlannerService;
+import com.project.netsentinel.agent.service.reporter.ReporterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AgentOrchestrator {
     private final PlannerService plannerService;
     private final ExecutorService executorService;
+    private final ReporterService reporterService;
 
     // В идеале в будущем заменить на Redis или БД
     private final Map<UUID, AgentState> sessionCache = new ConcurrentHashMap<>();
@@ -68,16 +70,16 @@ public class AgentOrchestrator {
     private String executeRemainingSteps(AgentState state) {
         while (state.hasMoreSteps()) {
             DiagnosticStep currentStep = state.getCurrentStep();
-            log.info("Executing step {}/{} for chat {}",
-                    state.getCurrentStepIndex() + 1, state.getPlan().steps().size(), state.getId());
+            log.info("Executing: {}", currentStep.action());
 
-            // 2. Выполнение (ExecutorService использует executorChatClient с тулзами)
             String result = executorService.executeStep(currentStep);
-            state.addResult(result);
+            state.addResult(String.format("Шаг: %s\nРезультат: %s", currentStep.action(), result));
         }
 
         state.setStatus(AgentState.Status.COMPLETED);
-        return formatFinalReport(state);
+
+        // ВАЖНО: Вместо formatFinalReport вызываем умную суммаризацию
+        return reporterService.generateFinalReport(state.getPlan().goal(), state.getResults());
     }
 
     private String formatSteps(DiagnosticPlan plan) {

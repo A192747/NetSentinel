@@ -13,4 +13,9 @@ public class UserTaskEnricher implements TaskEnricher {
     public Enrichers getType() {
         return Enrichers.USER;
     }
+
+    @Override
+    public String getMainPrompt() {
+        return mainPrompt;
+    }
 }

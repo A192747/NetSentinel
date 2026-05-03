@@ -23,10 +23,14 @@ public class ChatClientConfig {
     @Value("${net-sentinel.agent.executor.prompt}")
     private String executorPrompt;
 
+    @Value("${net-sentinel.agent.answerer.prompt}")
+    private String answererPrompt;
+
     @Bean("plannerClient")
-    public ChatClient plannerChatClient(ChatClient.Builder builder) {
+    public ChatClient plannerChatClient(ChatClient.Builder builder, NetworkTools networkTools) {
         return builder
                 .defaultSystem(plannerPrompt)
+                .defaultTools(networkTools)
                 .build();
     }
 
@@ -46,6 +50,13 @@ public class ChatClientConfig {
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         new SimpleLoggerAdvisor()
                 )
+                .build();
+    }
+
+    @Bean("answererClient")
+    public ChatClient answererChatClient(ChatClient.Builder builder) {
+        return builder
+                .defaultSystem(answererPrompt)
                 .build();
     }
 }
