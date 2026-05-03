@@ -17,34 +17,33 @@ import java.util.List;
 @Slf4j
 public class ChatClientConfig {
 
-    @Value("${net-sentinel.agent.prompt:}")
-    private String mainPrompt;
+    @Value("${net-sentinel.agent.planner.prompt}")
+    private String plannerPrompt;
 
-    @Bean
-    public ChatClient sREChatClient(ChatClient.Builder builder,
-                                    NetworkTools networkTools,
-                                    ChatMemory chatMemory,
-                                    List<ToolCallback> filteredTools) {
+    @Value("${net-sentinel.agent.executor.prompt}")
+    private String executorPrompt;
 
-        log.info("Initializing sREChatClient with following components:");
-        log.info("System Prompt: {}", mainPrompt.substring(0, Math.min(mainPrompt.length(), 100)) + "...");
-        log.info("Local NetworkTools found: {}", networkTools != null);
-        log.info("ChatMemory implementation: {}", chatMemory.getClass().getSimpleName());
-        log.info("Number of MCP/Filtered Tools: {}", filteredTools.size());
-        filteredTools.forEach(tool ->
-                log.info(" - Tool available: {} ({})", tool.getToolDefinition().name(), tool.getToolDefinition().description())
-        );
+    @Bean("plannerClient")
+    public ChatClient plannerChatClient(ChatClient.Builder builder) {
+        return builder
+                .defaultSystem(plannerPrompt)
+                .build();
+    }
+
+    @Bean("executorClient")
+    public ChatClient executorChatClient(ChatClient.Builder builder,
+                                         NetworkTools networkTools,
+                                         ChatMemory chatMemory,
+                                         List<ToolCallback> filteredTools) {
+
+        log.info("Initializing Executor with {} tools", filteredTools.size());
 
         return builder
-                .defaultSystem(mainPrompt)
-                // Добавляем локальные инструменты
+                .defaultSystem(executorPrompt)
                 .defaultTools(networkTools)
-                // Добавляем инструменты из всех подключенных MCP серверов
                 .defaultToolCallbacks(filteredTools)
                 .defaultAdvisors(
-                        // Настройка памяти
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
-                        // Логирование в консоль (Thought/Action/Observation)
                         new SimpleLoggerAdvisor()
                 )
                 .build();
